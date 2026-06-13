@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Order Enquiry — THL Hardware City Sdn Bhd</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #F5F5F5;
+    color: #1A1A1A;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+
+  .header {
+    background: #CC2200;
+    padding: 1.25rem 1rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header h1 {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+    border: 0.5px solid #E0E0E0;
+  }
+
+  .section-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    margin-bottom: 14px;
+  }
+
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid #DDD;
+    border-radius: 10px;
+    background: #FAFAFA;
+    color: #1A1A1A;
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .field textarea { resize: none; line-height: 1.55; }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: #CC2200;
+    box-shadow: 0 0 0 3px rgba(204,34,0,0.1);
+    background: #fff;
+  }
+
+  .req { color: #CC2200; }
+
+  /* Customer type grid */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .type-btn {
+    border: 1px solid #DDD;
+    border-radius: 10px;
+    padding: 12px 8px 10px;
+    text-align: center;
+    cursor: pointer;
+    background: #FAFAFA;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .type-btn:active { transform: scale(0.97); }
+  .type-btn.selected {
+    border-color: #CC2200;
+    background: #FFF5F3;
+  }
+  .type-btn .t-icon {
+    font-size: 22px;
+    color: #999;
+    margin-bottom: 5px;
+  }
+  .type-btn.selected .t-icon { color: #CC2200; }
+  .type-btn .t-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #333;
+  }
+  .type-btn.selected .t-label { color: #CC2200; }
+  .type-btn .t-sub {
+    font-size: 10.5px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  /* Product items */
+  .item-row {
+    background: #F7F7F7;
+    border-radius: 10px;
+    padding: 10px 10px 10px;
+    margin-bottom: 8px;
+    position: relative;
+    border: 1px solid #EBEBEB;
+  }
+  .item-num {
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .item-row .remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #EBEBEB;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #888;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .item-row .remove-btn:hover { background: #FFE5E0; color: #CC2200; }
+
+  .item-field input,
+  .item-field select {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    background: #fff;
+    color: #1A1A1A;
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.15s;
+  }
+  .item-field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .item-field input:focus,
+  .item-field select:focus { border-color: #CC2200; }
+
+  .item-row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 7px;
+  }
+  .item-sub-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .add-btn {
+    width: 100%;
+    border: 1.5px dashed #CCC;
+    border-radius: 10px;
+    padding: 11px;
+    background: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 13px;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .add-btn:hover, .add-btn:active {
+    border-color: #CC2200;
+    color: #CC2200;
+    background: #FFF5F3;
+  }
+
+  /* Delivery toggle */
+  .delivery-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .del-btn {
+    border: 1px solid #DDD;
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    background: #FAFAFA;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .del-btn.selected { border-color: #CC2200; background: #FFF5F3; }
+  .del-btn .d-icon { font-size: 22px; color: #999; margin-bottom: 5px; }
+  .del-btn.selected .d-icon { color: #CC2200; }
+  .del-btn .d-label { font-size: 13px; font-weight: 600; color: #333; }
+  .del-btn.selected .d-label { color: #CC2200; }
+  .del-btn .d-sub { font-size: 11px; color: #999; margin-top: 2px; }
+
+  #address-wrap {
+    display: none;
+    margin-top: 12px;
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%;
+    background: #CC2200;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+    transition: opacity 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .submit-btn:active { opacity: 0.88; transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.45; cursor: default; }
+  .submit-btn i { font-size: 18px; }
+
+  .note {
+    font-size: 11.5px;
+    color: #999;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+
+  /* Error state */
+  .err { border-color: #CC2200 !important; }
+
+  /* Success */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .success-overlay.show { display: flex; }
+  .success-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    max-width: 320px;
+    width: 100%;
+  }
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: #EAF3DE;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .success-icon i { font-size: 30px; color: #3B6D11; }
+  .success-card h2 { font-size: 18px; font-weight: 600; color: #1A1A1A; margin-bottom: 8px; }
+  .success-card p { font-size: 13.5px; color: #666; line-height: 1.55; }
+  .success-card .ok-btn {
+    margin-top: 1.25rem;
+    width: 100%;
+    background: #CC2200;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .wa-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #E7F5E0;
+    color: #2A7A1A;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 4px 10px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>THL HARDWARE CITY SDN BHD</h1>
+  <p>Borang Pesanan / Order Enquiry Form</p>
+</div>
+
+<div class="container">
+
+  <!-- Customer Info -->
+  <div class="section">
+    <div class="section-label">Maklumat Pelanggan / Customer Info</div>
+
+    <div class="field">
+      <label>Nama / Name <span class="req">*</span></label>
+      <input type="text" id="f-name" placeholder="Nama penuh / Full name" autocomplete="name">
+    </div>
+
+    <div class="field">
+      <label>No. WhatsApp <span class="req">*</span></label>
+      <input type="tel" id="f-phone" placeholder="e.g. 0123456789" autocomplete="tel">
+    </div>
+
+    <div class="field">
+      <label>Nama Syarikat / Company <span style="color:#999;font-weight:400;">(jika ada / if any)</span></label>
+      <input type="text" id="f-company" placeholder="Nama syarikat / Company name">
+    </div>
+
+    <div class="field">
+      <label>Jenis Pelanggan / Customer Type <span class="req">*</span></label>
+      <div class="type-grid">
+        <div class="type-btn" data-val="Retail" onclick="selectType(this)">
+          <div class="t-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div class="t-label">Retail</div>
+          <div class="t-sub">Beli terus / Walk-in</div>
+        </div>
+        <div class="type-btn" data-val="Wholesale / Borong" onclick="selectType(this)">
+          <div class="t-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <div class="t-label">Wholesale</div>
+          <div class="t-sub">Pembelian borong</div>
+        </div>
+        <div class="type-btn" data-val="Contractor" onclick="selectType(this)">
+          <div class="t-icon"><i class="fa-solid fa-helmet-safety"></i></div>
+          <div class="t-label">Contractor</div>
+          <div class="t-sub">Sub-con / Project</div>
+        </div>
+        <div class="type-btn" data-val="Home / End User" onclick="selectType(this)">
+          <div class="t-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="t-label">Home / End User</div>
+          <div class="t-sub">Pengguna akhir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="section">
+    <div class="section-label">Senarai Produk / Product List <span class="req">*</span></div>
+
+    <div id="items-container">
+      <div class="item-row" id="item-1">
+        <div class="item-num">Produk 1</div>
+        <div class="item-field">
+          <input type="text" class="item-name" placeholder="Nama / jenis produk (e.g. Bata merah, Simen, Paip PVC 4 inci...)">
+        </div>
+        <div class="item-row2">
+          <div>
+            <div class="item-sub-label">Kuantiti / Qty</div>
+            <div class="item-field">
+              <input type="text" class="item-qty" placeholder="e.g. 500, 2">
+            </div>
+          </div>
+          <div>
+            <div class="item-sub-label">Unit</div>
+            <div class="item-field">
+              <select class="item-unit">
+                <option>Biji / Pcs</option>
+                <option>Pallet</option>
+                <option>Box / Kotak</option>
+                <option>Bag / Beg</option>
+                <option>Roll / Gulung</option>
+                <option>Set</option>
+                <option>Meter</option>
+                <option>Kg</option>
+                <option>Liter</option>
+                <option>Tin</option>
+                <option>Lain-lain / Others</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="addItem()">
+      <i class="fa-solid fa-plus"></i> Tambah produk / Add product
+    </button>
+  </div>
+
+  <!-- Delivery -->
+  <div class="section">
+    <div class="section-label">Penghantaran / Delivery</div>
+    <div class="delivery-toggle">
+      <div class="del-btn" id="del-pickup" onclick="selectDelivery('pickup')">
+        <div class="d-icon"><i class="fa-solid fa-store"></i></div>
+        <div class="d-label">Self-collect</div>
+        <div class="d-sub">Ambil sendiri</div>
+      </div>
+      <div class="del-btn" id="del-delivery" onclick="selectDelivery('delivery')">
+        <div class="d-icon"><i class="fa-solid fa-truck"></i></div>
+        <div class="d-label">Delivery</div>
+        <div class="d-sub">Hantar ke lokasi</div>
+      </div>
+    </div>
+    <div id="address-wrap">
+      <label style="font-size:13px;color:#555;font-weight:500;display:block;margin-bottom:5px;">
+        Alamat penghantaran / Delivery address <span class="req">*</span>
+      </label>
+      <div class="field" style="margin-bottom:0;">
+        <textarea id="f-address" rows="3" placeholder="No. rumah, Jalan, Bandar, Poskod, Negeri..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Info -->
+  <div class="section">
+    <div class="section-label">Maklumat Tambahan / Additional Info</div>
+    <div class="field">
+      <label>Tarikh diperlukan / Date needed</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field">
+      <label>Nota / Remarks</label>
+      <textarea id="f-remarks" rows="3" placeholder="Warna, saiz, jenama pilihan, atau apa-apa maklumat lain... / Colour, size, brand preference, or any other details..."></textarea>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="wa-badge"><i class="fa-brands fa-whatsapp"></i> Dihantar via WhatsApp</div>
+  <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+    <i class="fa-brands fa-whatsapp"></i>
+    Hantar Enquiry / Submit
+  </button>
+  <p class="note">
+    Kami akan hubungi anda dalam masa 1 hari bekerja untuk quotation.<br>
+    We'll contact you within 1 working day with a quote.
+  </p>
+
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <h2>Enquiry Dihantar!</h2>
+    <p>Terima kasih! THL Hardware City akan menghubungi anda tidak lama lagi untuk quotation.<br><br>
+    Thank you! We'll contact you soon with a quote.</p>
+    <button class="ok-btn" onclick="document.getElementById('success-overlay').classList.remove('show')">OK</button>
+  </div>
+</div>
+
+<script>
+  let itemCount = 1;
+  let selectedType = '';
+  let selectedDelivery = '';
+
+  function selectType(el) {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedType = el.dataset.val;
+  }
+
+  function selectDelivery(type) {
+    selectedDelivery = type;
+    document.getElementById('del-pickup').classList.toggle('selected', type === 'pickup');
+    document.getElementById('del-delivery').classList.toggle('selected', type === 'delivery');
+    document.getElementById('address-wrap').style.display = type === 'delivery' ? 'block' : 'none';
+  }
+
+  function addItem() {
+    itemCount++;
+    const container = document.getElementById('items-container');
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    div.id = 'item-' + itemCount;
+    div.innerHTML = `
+      <div class="item-num">Produk ${itemCount}</div>
+      <button class="remove-btn" onclick="removeItem('item-${itemCount}')" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button>
+      <div class="item-field">
+        <input type="text" class="item-name" placeholder="Nama / jenis produk (e.g. Bata merah, Simen, Paip PVC 4 inci...)">
+      </div>
+      <div class="item-row2">
+        <div>
+          <div class="item-sub-label">Kuantiti / Qty</div>
+          <div class="item-field">
+            <input type="text" class="item-qty" placeholder="e.g. 500, 2">
+          </div>
+        </div>
+        <div>
+          <div class="item-sub-label">Unit</div>
+          <div class="item-field">
+            <select class="item-unit">
+              <option>Biji / Pcs</option>
+              <option>Pallet</option>
+              <option>Box / Kotak</option>
+              <option>Bag / Beg</option>
+              <option>Roll / Gulung</option>
+              <option>Set</option>
+              <option>Meter</option>
+              <option>Kg</option>
+              <option>Liter</option>
+              <option>Tin</option>
+              <option>Lain-lain / Others</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+    div.querySelector('.item-name').focus();
+  }
+
+  function removeItem(id) {
+    document.getElementById(id).remove();
+    renumberItems();
+  }
+
+  function renumberItems() {
+    document.querySelectorAll('.item-row').forEach((row, i) => {
+      const label = row.querySelector('.item-num');
+      if (label) label.textContent = 'Produk ' + (i + 1);
+    });
+  }
+
+  function submitForm() {
+    const name    = document.getElementById('f-name').value.trim();
+    const phone   = document.getElementById('f-phone').value.trim();
+    const company = document.getElementById('f-company').value.trim();
+    const date    = document.getElementById('f-date').value;
+    const remarks = document.getElementById('f-remarks').value.trim();
+    const address = document.getElementById('f-address') ? document.getElementById('f-address').value.trim() : '';
+
+    // Validation
+    let valid = true;
+    [document.getElementById('f-name'), document.getElementById('f-phone')].forEach(el => {
+      el.classList.remove('err');
+      if (!el.value.trim()) { el.classList.add('err'); valid = false; }
+    });
+    if (!selectedType) { alert('Sila pilih jenis pelanggan.\nPlease select customer type.'); return; }
+
+    const items = [];
+    document.querySelectorAll('.item-row').forEach((row, i) => {
+      const n = row.querySelector('.item-name').value.trim();
+      const q = row.querySelector('.item-qty').value.trim();
+      const u = row.querySelector('.item-unit').value;
+      if (n) items.push(`  ${i+1}. ${n} — ${q || '?'} ${u}`);
+    });
+    if (items.length === 0) { alert('Sila tambah sekurang-kurangnya satu produk.\nPlease add at least one product.'); return; }
+    if (!valid) { alert('Sila isi semua maklumat yang diperlukan.\nPlease fill in all required fields.'); return; }
+    if (selectedDelivery === 'delivery' && !address) { document.getElementById('f-address').classList.add('err'); alert('Sila isi alamat penghantaran.\nPlease fill in delivery address.'); return; }
+
+    const deliveryLine = selectedDelivery === 'pickup'
+      ? '🏪 Self-collect (Ambil sendiri)'
+      : selectedDelivery === 'delivery'
+        ? `🚚 Delivery ke:\n  ${address}`
+        : '❓ Belum dipilih';
+
+    const msg =
+`🔧 *ENQUIRY BARU — THL HARDWARE CITY*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Nama:* ${name}
+📱 *WhatsApp:* ${phone}${company ? '\n🏢 *Syarikat:* ' + company : ''}
+🏷️ *Jenis Pelanggan:* ${selectedType}
+
+📦 *PRODUK DIPERLUKAN:*
+${items.join('\n')}
+
+${deliveryLine}
+📅 *Tarikh diperlukan:* ${date || 'Tidak dinyatakan'}
+📝 *Nota:* ${remarks || 'Tiada'}
+━━━━━━━━━━━━━━━━━━━━
+_Dihantar melalui THL Order Form_`;
+
+    const waUrl = 'https://wa.me/60165176211?text=' + encodeURIComponent(msg);
+    window.open(waUrl, '_blank');
+    document.getElementById('success-overlay').classList.add('show');
+    document.getElementById('submit-btn').disabled = true;
+  }
+</script>
+</body>
+</html>
